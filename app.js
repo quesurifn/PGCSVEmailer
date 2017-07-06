@@ -51,12 +51,6 @@ app.use('/', index);
       }
   });
 
- 
-
-/*
-
-*/
-
   let Client = require('pg').Client
   let client = new Client (
       'postgres://u90suan22q65d7:pe0422c664129c21c598ddd35b251a8bba3943a0e38c36f150ec1634ecefd9caa@ec2-54-173-29-18.compute-1.amazonaws.com:5432/d9cq3smcgpcqok?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
@@ -82,8 +76,8 @@ client.connect(function (err) {
     //console.log(result); // outputs: { name: 'brianc' } 
     client.query(`SELECT  "spree_addresses".* FROM "spree_addresses"`, function (err2, result2) {
     
-    
 
+      console.log(result2)
 
 
 
