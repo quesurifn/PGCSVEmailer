@@ -1,10 +1,10 @@
 'use strict'
 
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 
 const fs = require('fs')
@@ -21,10 +21,10 @@ const json2csv = require('json2csv');
 
 require('dotenv').config()
 
-var index = require('./routes/index');
+const index = require('./routes/index');
 
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -92,27 +92,27 @@ client.connect(function (err) {
     
       let csv = json2csv({ data: mergedObjects, fields: fields });
     
-    let mailOptions = {
-      from: '"Kyle Fahey" <kyle.c.r.fahey@gmail.com>', // sender address
-      to: 'kyle.c.fahey@gmail.com', // list of receivers
-      subject: 'Ecommerce Orders Last 24 Hours (CSV) ', // Subject line
-      text: 'Hello Team, here are the orders for the last 24 hours.', // plain text body
-      attachments: [
-        {
+      let mailOptions = {
+        from: '"Kyle Fahey" <kyle.c.r.fahey@gmail.com>', // sender address
+        to: 'kyle.c.fahey@gmail.com', // list of receivers
+        subject: 'Ecommerce Orders Last 24 Hours (CSV) ', // Subject line
+        text: 'Hello Team, here are the orders for the last 24 hours.', // plain text body
+        attachments: [
+          {
             'filename': 'orders.csv',
             'content': csv,
-        }
-      ]
-  };
+          }
+        ]
+    };
 
     
 
     transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
+      if (error) {
         return console.log(error);
-    }
-    console.log('Message %s sent: %s', info.messageId, info.response);
-  });
+      }
+      console.log('Message %s sent: %s', info.messageId, info.response);
+    });
 
 
 
@@ -121,10 +121,6 @@ client.connect(function (err) {
     // Be sure to provide fields if it is possible that your data array will be empty. 
     console.error(err);
   } 
-
-
- 
-  
     // disconnect the client 
     client.end(function (err) {
         if (err) throw err;
@@ -133,10 +129,7 @@ client.connect(function (err) {
   });
 });
 
-
-
 //});
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
