@@ -12,11 +12,9 @@ const pg = require('pg');
 const parse = require('pg-connection-string').parse;
 const co     = require('co')
 const schedule = require('node-schedule');
-const Heroku = require('heroku-client')
-const heroku = new Heroku({ token: process.env.HEROKU_API_TOKEN })
 const nodemailer = require('nodemailer');
-const xoauth2 = require ('xoauth2')
 const json2csv = require('json2csv');
+const zcta = require("us-zcta-counties");
 
 
 require('dotenv').config()
@@ -41,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-//const j = schedule.scheduleJob('0 09 * *', function(){
+const j = schedule.scheduleJob('0 09 * *', function(){
     
   let transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -61,8 +59,8 @@ app.use('/', index);
   'special_instructions', 'created_at', 'updated_at', 'currency', 'last_ip_adress', 'created_by_id', 
   'shipment_total', 'aditional_tax_total', 'promo_total', 'channel', 'included_tax_total', 'item_count', 
   'item_count', 'approver_id', 'approved_at', 'confimred_delivered', 'confirmed_risky', 'guest_token', 'canceled_at',
-  'canceler_id', 'store_id', 'state_lock_version', 'taxable_adjustment_total', 'non_taxable_adjustment', 'address1',
-  'address2', 'city', 'zipcode'
+  'canceler_id', 'store_id', 'state_lock_version', 'taxable_adjustment_total', 'non_taxable_adjustment', 'ship_address1',
+  'ship_address2', 'ship_city', 'ship_zipcode', 'ship_state', 'bill_address1', 'bill_address2', 'bill_city', 'bill_zipcode', 'bill_state', 'phone'
   ]
  
 // connect to our database 
@@ -83,8 +81,22 @@ client.connect(function (err) {
 				let	merge = result2.rows.filter(function(e2) {
 							return e2.id == e.ship_address_id;
 						})[0];
-						return Object.assign(e, { address1: merge.address1, address2: merge.address2, city: merge.city, zipcode: e.zipcode});
+            let state = zcta.find({zip: merge.zipcode})
+            console.log(state.state)
+						return Object.assign(e, { ship_address1: merge.address1, ship_address2: merge.address2, ship_city: merge.city, ship_zipcode: merge.zipcode, ship_state: state.state, phone: merge.phone });
 					});
+
+      let finalMerged = mergedObjects.map(function(e) {
+        let merge = result2.rows.filter(function(e2) {
+          return e2.id == e.bill_address_id;
+        })[0];
+        let state = zcta.find({zip: merge.zipcode})
+        return Object.assign(e, { bill_address1: merge.address1, bill_address2: merge.address2, bill_city: merge.city, bill_zipcode: merge.zipcode, bill_state: state.state});
+      })
+
+          
+    
+    
     console.log(JSON.stringify(mergedObjects))
 
 
@@ -105,6 +117,7 @@ client.connect(function (err) {
         ]
     };
 
+    
     
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -129,7 +142,7 @@ client.connect(function (err) {
   });
 });
 
-//});
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
