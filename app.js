@@ -61,7 +61,8 @@ app.use('/', index);
   'special_instructions', 'created_at', 'updated_at', 'currency', 'last_ip_adress', 'created_by_id', 
   'shipment_total', 'aditional_tax_total', 'promo_total', 'channel', 'included_tax_total', 'item_count', 
   'item_count', 'approver_id', 'approved_at', 'confimred_delivered', 'confirmed_risky', 'guest_token', 'canceled_at',
-  'canceler_id', 'store_id', 'state_lock_version', 'taxable_adjustment_total', 'non_taxable_adjustment'
+  'canceler_id', 'store_id', 'state_lock_version', 'taxable_adjustment_total', 'non_taxable_adjustment', 'address1',
+  'address2', 'city', 'zipcode'
   ]
  
 // connect to our database 
@@ -77,13 +78,19 @@ client.connect(function (err) {
     client.query(`SELECT  "spree_addresses".* FROM "spree_addresses"`, function (err2, result2) {
     
 
-      console.log(result2)
-
+    console.log(result2)
+    let mergedObjects = result.rows.map(function(e) {
+				let	merge = result2.rows.filter(function(e2) {
+							return e2.id == e.ship_address_id;
+						})[0];
+						return Object.assign(e, { address1: merge.address1, address2: merge.address2, city: merge.city, zipcode: e.zipcode});
+					});
+    console.log(JSON.stringify(mergedObjects))
 
 
     try {
     
-      let csv = json2csv({ data: result.rows, fields: fields });
+      let csv = json2csv({ data: mergedObjects, fields: fields });
     
     let mailOptions = {
       from: '"Kyle Fahey" <kyle.c.r.fahey@gmail.com>', // sender address
@@ -129,9 +136,6 @@ client.connect(function (err) {
 
 
 //});
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
