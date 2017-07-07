@@ -94,12 +94,7 @@ client.connect(function (err) {
         return Object.assign(e, { bill_address1: merge.address1, bill_address2: merge.address2, bill_city: merge.city, bill_zipcode: merge.zipcode, bill_state: state.state});
       })
 
-          
-    
-    
-    console.log(JSON.stringify(mergedObjects))
-
-
+     
     try {
     
       let csv = json2csv({ data: mergedObjects, fields: fields });
@@ -117,17 +112,12 @@ client.connect(function (err) {
         ]
     };
 
-    
-    
-
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         return console.log(error);
       }
       console.log('Message %s sent: %s', info.messageId, info.response);
     });
-
-
 
     } catch (err) {
     // Errors are thrown for bad options, or if the data is empty and no fields are provided. 
