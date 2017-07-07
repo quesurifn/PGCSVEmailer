@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 
 const fs = require('fs')
 const pg = require('pg');
-const parse = require('pg-connection-string').parse;
 const co     = require('co')
 const schedule = require('node-schedule');
 const nodemailer = require('nodemailer');
@@ -39,7 +38,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-const j = schedule.scheduleJob('0 09 * *', function(){
+var j = schedule.scheduleJob({hour: 09, minute: 55}, function(){
+  console.log('Time for tea!');
+
+
     
   let transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -98,7 +100,7 @@ client.connect(function (err) {
     try {
     
       let csv = json2csv({ data: mergedObjects, fields: fields });
-    
+      console.log(csv)
       let mailOptions = {
         from: '"Kyle Fahey" <kyle.c.r.fahey@gmail.com>', // sender address
         to: 'kyle.c.fahey@gmail.com', // list of receivers
@@ -126,13 +128,14 @@ client.connect(function (err) {
   } 
     // disconnect the client 
     client.end(function (err) {
-        if (err) throw err;
+          if (err) throw err;
+        });
       });
     });
   });
 });
 
-});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
