@@ -74,7 +74,7 @@ client.connect(function (err) {
       console.log(csv)
       let mailOptions = {
         from: '"Kyle Fahey" <kyle.c.r.fahey@gmail.com>', // sender address
-        to: 'kyle.c.fahey@gmail.com,jwright@elexausa.com, fpinto@elexausa.com, jstorino@elexausa.com, mcwiokowski@elexausa.com', // list of receivers
+        to: 'kyle.c.fahey@gmail.com', // list of receivers
         subject: 'Ecommerce Orders Last 24 Hours (CSV) ', // Subject line
         text: 'Hello Team, here are the orders for the last 24 hours. Thanks. Kyle Fahey', // plain text body
         attachments: [
