@@ -1,15 +1,9 @@
+#!/usr/bin/env node
+
 'use strict'
-
-const express = require('express');
-const path = require('path');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-
 
 const fs = require('fs')
 const pg = require('pg');
-const co     = require('co')
 const schedule = require('node-schedule');
 const nodemailer = require('nodemailer');
 const json2csv = require('json2csv');
@@ -17,29 +11,6 @@ const zcta = require("us-zcta-counties");
 
 
 require('dotenv').config()
-
-const index = require('./routes/index');
-
-
-const app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', index);
-
-
-var j = schedule.scheduleJob({hour: 9, minute: 55}, function(){
-  console.log('Time for tea!');
 
 
     
@@ -103,7 +74,7 @@ client.connect(function (err) {
       console.log(csv)
       let mailOptions = {
         from: '"Kyle Fahey" <kyle.c.r.fahey@gmail.com>', // sender address
-        to: 'kyle.c.fahey@gmail.com, jwright@elexausa.com, fpinto@elexausa.com, jstorino@elexausa.com,mcwiokowski@elexausa.com', // list of receivers
+        to: 'kyle.c.fahey@gmail.com', // list of receivers
         subject: 'Ecommerce Orders Last 24 Hours (CSV) ', // Subject line
         text: 'Hello Team, here are the orders for the last 24 hours. Thanks. Kyle Fahey', // plain text body
         attachments: [
@@ -133,25 +104,3 @@ client.connect(function (err) {
       });
     });
   });
-});
-
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;
