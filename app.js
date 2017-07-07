@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-var j = schedule.scheduleJob({hour: 09, minute: 55}, function(){
+var j = schedule.scheduleJob({hour: 9, minute: 55}, function(){
   console.log('Time for tea!');
 
 
