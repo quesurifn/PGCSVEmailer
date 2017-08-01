@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-var j = schedule.scheduleJob({hour: 11, minute: 11}, function(){
+
   console.log('Time for tea!');
 
 
@@ -63,7 +63,9 @@ client.connect(function (err) {
   if (err) throw err;
  
   // execute a query on our database 
-  client.query(`SELECT  "spree_orders".* FROM "spree_orders" WHERE  "spree_orders"."completed_at" > current_timestamp - interval '1 day'`, function (err, result) {
+  client.query(`SELECT  "spree_orders".* FROM "spree_orders" WHERE 'completed_at' != 'null'  `, function (err, result) {
+    console.log(result)
+
     if (err) throw err;
  
     // just print the result to the console 
@@ -77,7 +79,9 @@ client.connect(function (err) {
           return {
             email: e.email
           }
-      });
+      }).filter(function(e){
+          return e.email != null
+      }) ;
 
     try {
     
@@ -116,7 +120,7 @@ client.connect(function (err) {
         });
       });
     });
-  });
+
 
 
 
