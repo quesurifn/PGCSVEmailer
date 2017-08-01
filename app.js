@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 
 
-var j = schedule.scheduleJob({hour: 9, minute: 55}, function(){
+var j = schedule.scheduleJob({hour: 11, minute: 11}, function(){
   console.log('Time for tea!');
 
 
@@ -56,14 +56,7 @@ var j = schedule.scheduleJob({hour: 9, minute: 55}, function(){
       'postgres://u90suan22q65d7:pe0422c664129c21c598ddd35b251a8bba3943a0e38c36f150ec1634ecefd9caa@ec2-54-173-29-18.compute-1.amazonaws.com:5432/d9cq3smcgpcqok?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
   )
   
-  let fields = ['id','number','item_total','total','state','adjustment_total', 'user_id', 'completed_at',
-  'bill_address_id', 'ship_address_id', 'payment_total', 'shipment_state', 'payment_state', 'email',
-  'special_instructions', 'created_at', 'updated_at', 'currency', 'last_ip_adress', 'created_by_id', 
-  'shipment_total', 'aditional_tax_total', 'promo_total', 'channel', 'included_tax_total', 'item_count', 
-  'item_count', 'approver_id', 'approved_at', 'confimred_delivered', 'confirmed_risky', 'guest_token', 'canceled_at',
-  'canceler_id', 'store_id', 'state_lock_version', 'taxable_adjustment_total', 'non_taxable_adjustment', 'ship_address1',
-  'ship_address2', 'ship_city', 'ship_zipcode', 'ship_state', 'bill_address1', 'bill_address2', 'bill_city', 'bill_zipcode', 'bill_state', 'phone'
-  ]
+  let fields = ['email']
  
 // connect to our database 
 client.connect(function (err) {
@@ -75,35 +68,24 @@ client.connect(function (err) {
  
     // just print the result to the console 
     //console.log(result); // outputs: { name: 'brianc' } 
-    client.query(`SELECT  "spree_addresses".* FROM "spree_addresses"`, function (err2, result2) {
+ 
     
 
-    console.log(result2)
+
     let mergedObjects = result.rows.map(function(e) {
-				let	merge = result2.rows.filter(function(e2) {
-							return e2.id == e.ship_address_id;
-						})[0];
-            let state = zcta.find({zip: merge.zipcode})
-            console.log(state.state)
-						return Object.assign(e, { ship_address1: merge.address1, ship_address2: merge.address2, ship_city: merge.city, ship_zipcode: merge.zipcode, ship_state: state.state, phone: merge.phone });
-					});
+          console.log(e.email)
+          return {
+            email: e.email
+          }
+      });
 
-      let finalMerged = mergedObjects.map(function(e) {
-        let merge = result2.rows.filter(function(e2) {
-          return e2.id == e.bill_address_id;
-        })[0];
-        let state = zcta.find({zip: merge.zipcode})
-        return Object.assign(e, { bill_address1: merge.address1, bill_address2: merge.address2, bill_city: merge.city, bill_zipcode: merge.zipcode, bill_state: state.state});
-      })
-
-     
     try {
     
       let csv = json2csv({ data: mergedObjects, fields: fields });
-      console.log(csv)
+
       let mailOptions = {
         from: '"Kyle Fahey" <kyle.c.r.fahey@gmail.com>', // sender address
-        to: 'kyle.c.fahey@gmail.com, jwright@elexausa.com, fpinto@elexausa.com, jstorino@elexausa.com,mcwiokowski@elexausa.com', // list of receivers
+        to: 'kyle.c.r.fahey@gmail.com', // list of receivers
         subject: 'Ecommerce Orders Last 24 Hours (CSV) ', // Subject line
         text: 'Hello Team, here are the orders for the last 24 hours. Thanks. Kyle Fahey', // plain text body
         attachments: [
@@ -113,6 +95,8 @@ client.connect(function (err) {
           }
         ]
     };
+
+    // 
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -133,7 +117,7 @@ client.connect(function (err) {
       });
     });
   });
-});
+
 
 
 // catch 404 and forward to error handler
